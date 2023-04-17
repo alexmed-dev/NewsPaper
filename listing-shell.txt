@@ -1,0 +1,83 @@
+from django.contrib.auth.models import User
+from django.db.models import Sum
+from news.models import Author
+from news.models import Category
+from news.models import Post
+from news.models import PostCategory
+from news.models import Comment
+
+
+#1. Создать двух пользователей (с помощью метода User.objects.create_user).
+user1=User.objects.create_user(username='ivanov')
+user2=User.objects.create_user(username='petrov')
+
+#2. Создать два объекта модели Author, связанные с пользователями.
+author1 = Author.objects.create(authorUser = user1)
+author2 = Author.objects.create(authorUser = user2)
+
+#3. Добавить 4 категории в модель Category.
+category1 = Category.objects.create(name = 'Спорт')
+category2 = Category.objects.create(name = 'Здоровье')
+category3 = Category.objects.create(name = 'Экономика')
+category4 = Category.objects.create(name = 'Путешествия')
+
+#4. Добавить 2 статьи и 1 новость.
+# (в первой статье не указал postType - должно присвоиться значение по-умолчанию: news='NW')
+post1 = Post.objects.create(author = author2, title='Спорт и туризм', text='Спортсмены посетили горнолыжный курорт. Также для поклонников лыжного спорта этой зимой были открыты 158 лыжных трасс общей протяженностью более 600 км.')
+post2 = Post.objects.create(author = author1, postType = Post.article, title='Рост экономики', text='Основной вклад в рост экономики внесет восстановление потребительского спроса после спада.')
+post3 = Post.objects.create(author = author2, postType = Post.news, title='Новое лекарство', text='Ученые МГУ испытают новое лекарство на основе клеточных технологий и методов тканевой инженерии.')
+
+#5. Присвоить им категории (как минимум в одной статье/новости должно быть не меньше 2 категорий).
+post1.postCategory.add(category4)
+post1.postCategory.add(category1)
+post2.postCategory.add(category3)
+post3.postCategory.add(category2)
+
+#6. Создать как минимум 4 комментария к разным объектам модели Post (в каждом объекте должен быть как минимум один комментарий).
+comment1 = Comment.objects.create(post = post1, author = user2, text = 'Интересно!')
+comment2 = Comment.objects.create(post = post2, author = user2, text = 'Смешно, ха')
+comment3 = Comment.objects.create(post = post3, author = user1, text = 'Очень интересно.')
+comment4 = Comment.objects.create(post = post3, author = user2, text = 'Здорово!')
+comment5 = Comment.objects.create(post = post1, author = user1, text = 'Понравилась новость )')
+
+#7. Применяя функции like() и dislike() к статьям/новостям и комментариям, скорректировать рейтинги этих объектов.
+post1.like()
+post1.like()
+post2.like()
+post2.like()
+post3.like()
+post3.like()
+post3.like()
+post2.dislike()
+post1.like()
+post1.like()
+post1.like()
+comment1.like()
+comment2.dislike()
+comment3.like()
+comment4.like()
+comment3.like()
+comment5.like()
+comment5.like()
+
+
+#8. Обновить рейтинги пользователей.
+author1.update_rating()
+author2.update_rating()
+
+#9. Вывести username и рейтинг лучшего пользователя (применяя сортировку и возвращая поля первого объекта).
+# возвращает словарь:
+bestUser=Author.objects.all().order_by('-rating').values('authorUser__username', 'id', 'rating')[0]
+print(bestUser.get('authorUser__username'), bestUser.get('rating'))
+
+#10. Вывести дату добавления, username автора, рейтинг, заголовок и превью лучшей статьи, основываясь на лайках/дислайках к этой статье.
+# возвращает объект:
+bestPost = Post.objects.all().order_by('-postRating')[0]
+print(bestPost.dateTimeCreate, bestPost.author.authorUser.username, bestPost.postRating, bestPost.title, bestPost.preview())
+
+#11. Вывести все комментарии (дата, пользователь, рейтинг, текст) к этой статье.
+comments_best_post=Comment.objects.filter(post = bestPost).values('dateTimeCreate', 'author__username', 'commentRating', 'text')
+
+for com in comments_best_post:
+    print(com.get('dateTimeCreate'), com.get('author__username'), com.get('commentRating'), com.get('text'))
+
