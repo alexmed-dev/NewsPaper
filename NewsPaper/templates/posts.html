@@ -12,7 +12,11 @@
     <h1>Все статьи и новости</h1>
     <hr>
     {% if posts %} <!-- Выводим статьи только если они есть с помощью тега if -->
-    <h3>Всего статей и новостей: {{ posts|length }}</h3>
+    {% if is_paginated %}
+    <h5>Всего статей и новостей: {{ page_obj.paginator.count }}</h5>
+    {% else %}
+    <h5>Всего статей и новостей: {{ posts|length }}</h5>
+    {% endif %}
         <table>
             <tr>
                 <td>
@@ -39,6 +43,30 @@
             </tr>
         {% endfor %}
         </table>
+        <!-- Проверяем что поддерживается постраничный вывод -->
+        {% if is_paginated %}
+        <!-- Если доступна предыдущая страница, то даём ссылку на неё и самую первую страницу -->
+        {% if page_obj.has_previous %}
+            <a href="?page=1">First</a>
+            <a href="?page={{ page_obj.previous_page_number }}"><<<</a>
+        {% endif %}
+
+        <!-- Показываем только текущую страницу и ближайшие к ней, чтобы список не тянулся и не захламлял страницу -->
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <a>{{ num }}</a>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a href="?page={{ num }}">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+
+        <!-- Если есть следующая страница, то даём ссылку на неё и на самую последнюю страницу -->
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">>>></a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+        {% endif %}
+
+        {% endif %}
     {% else %} <!-- Если статей нет, то говорим что статей нет ;) -->
         <h2>Статей и новостей нет!</h2>
     {% endif %}

@@ -1,0 +1,57 @@
+{% extends 'default.html' %}
+
+{% load news_filters %}
+
+<!-- Название у нас будет Статьи и новости -->
+{% block title %}
+Поиск статьи или новости
+{% endblock title %}
+ 
+<!-- В контенте на странице мы выводим все статьи и новости -->
+{% block content %}
+    <h1>Поиск статьи или новости</h1>
+    <hr>
+    {% if filter.qs %} <!-- Выводим статьи только если они есть с помощью тега if -->
+    <h3>Найдено статей и новостей: {{ filter.qs.count }}</h3>
+    <form method="GET">
+        {{ filter.form }} <!-- Форму от фильтров за нас сделает Django. А вот кнопку, увы, придётся делать самому -->
+        <input type="submit" value="Найти">
+    </form>
+    <p>* вводите дату в формате: 19 Apr 2023</p>
+    <br>
+        <table>
+            <tr>
+                <td>
+                    Заголовок
+                </td>
+                <td>
+                    Дата
+                </td>
+                <td>
+                    Содержание
+                </td>
+            </tr>
+        {% for post in filter.qs %} <!-- поменяем posts на filter.qs, т.к. теперь мы забираем уже отобранную по каким-то параметрам информацию -->
+            <tr>
+                <td>
+                    {{ post.title|censor }}
+                </td>
+                <td>
+                    {{ post.dateTimeCreate|date:'d M Y h:m' }}
+                </td>
+                <td>
+                    <a href="/news/{{ post.id }}">{{ post.text|censor|truncatechars:50 }}</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </table>
+    {% else %} <!-- Если статей нет, то говорим что статей нет ;) -->
+        <h3>Не найдены записи по введенным условиям поиска!</h3>
+        <form method="GET">
+            {{ filter.form }} <!-- Форму от фильтров за нас сделает Django. А вот кнопку, увы, придётся делать самому -->
+            <input type="submit" value="Найти">
+        </form>
+        <p>* вводите дату в формате: 19 Apr 2023</p>
+        <br>
+    {% endif %}
+{% endblock content %}
