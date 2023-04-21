@@ -1,0 +1,46 @@
+{% extends 'default.html' %}
+
+{% load news_filters %}
+
+<!-- Название у нас будет proudcts -->
+{% block title %}
+Статья или новость
+{% endblock title %}
+ 
+{% block content %}
+<h2>Вы действительно хотите удалить данный товар?</h2>
+<table>
+    <thead>
+        <th>
+            Name
+        </th>
+        <th>
+            Date
+        </th>
+        <th>
+            Type
+        </th>
+        <th>
+            Text
+        </th>
+    </thead>
+    <tr>
+        <td>
+            {{ post.title|censor }}
+        </td>
+        <td>
+            {{ post.dateTimeCreate|date:'d M Y h:m' }}
+        </td>
+        <td>
+            {{ post.get_postType_display }}
+        </td>
+        <td>
+            {{ post.text|censor }}
+        </td>
+    </tr>
+</table>
+ 
+<form method="POST">
+    {% csrf_token %}
+    <input type="submit" value="подтвердить"></form>
+{% endblock content %} 

@@ -39,10 +39,15 @@
                 </td>
                 <td>
                     <a href="/news/{{ post.id }}">{{ post.text|censor|truncatechars:50 }}</a>
+                    <a href="/news/{{ post.id }}/edit"><u>Редактировать</u></a>
+                    <a href="/news/{{ post.id }}/delete"><u>Удалить</u></a>
                 </td>
             </tr>
         {% endfor %}
         </table>
+
+        <a href="/news/add">Добавить статью/новость</a> <br>
+
         <!-- Проверяем что поддерживается постраничный вывод -->
         {% if is_paginated %}
         <!-- Если доступна предыдущая страница, то даём ссылку на неё и самую первую страницу -->

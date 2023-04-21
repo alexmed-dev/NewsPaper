@@ -2,9 +2,10 @@ from django.shortcuts import render
 # from django.views import View # импортируем простую вьюшку
 # from django.core.paginator import Paginator # импортируем класс Paginator
 
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, UpdateView, CreateView, DeleteView
 from .models import *
 from .filters import PostFilter # импортируем фильтр
+from .forms import PostForm
 
 
 class PostList(ListView):
@@ -21,30 +22,44 @@ class PostSearch(ListView):
     context_object_name = 'posts'  # это имя списка, в котором будут лежать все объекты, его надо указать, чтобы обратиться к самому списку объектов через HTML-шаблон
     # queryset = Post.objects.order_by('-id') # это если без формы поиска
     ordering = ['-id'] # это если с формой поиска
-    paginate_by = 2 # поставим постраничный вывод в один элемент
+    #paginate_by = 2 # поставим постраничный вывод в один элемент
 
     def get_context_data(self, **kwargs): # забираем отфильтрованные объекты переопределяя метод get_context_data у наследуемого класса
         context = super().get_context_data(**kwargs)
         context['filter'] = PostFilter(self.request.GET, queryset=self.get_queryset()) # вписываем наш фильтр в контекст
         return context
 
+
+# class PostDetail(DetailView):
+#     model = Post # модель всё та же, но мы хотим получать детали конкретно отдельного товара
+#     template_name = 'post.html' # название шаблона будет post.html
+#     context_object_name = 'post' # название объекта
+
+# дженерик для получения деталей о товаре
 class PostDetail(DetailView):
-    model = Post # модель всё та же, но мы хотим получать детали конкретно отдельного товара
-    template_name = 'post.html' # название шаблона будет post.html
-    context_object_name = 'post' # название объекта
-
-
-# пагинация без дженерика:
-# class PostList(View):
-    
-#     def get(self, request):
-#         posts = Post.objects.order_by('-id')
-#         p = Paginator(posts, 1) # создаём объект класса пагинатор, передаём ему список наших новостей и их количество для одной страницы
+    template_name = 'post.html'
+    queryset = Post.objects.all()
  
-#         posts = p.get_page(request.GET.get('page', 1)) # берём номер страницы из get-запроса. Если ничего не передали, будем показывать первую страницу.
-#         # теперь вместо всех объектов в списке товаров хранится только нужная нам страница с товарами
-        
-#         data = {
-#             'posts': posts,
-#         }
-#         return render(request, 'posts.html', data)
+ 
+# дженерик для создания объекта. Надо указать только имя шаблона и класс формы который мы написали в прошлом юните. Остальное он сделает за вас
+class PostCreate(CreateView):
+    template_name = 'post_create.html'
+    form_class = PostForm
+
+
+# дженерик для редактирования объекта
+class PostUpdate(UpdateView):
+    template_name = 'post_create.html'
+    form_class = PostForm
+ 
+    # метод get_object мы используем вместо queryset, чтобы получить информацию об объекте который мы собираемся редактировать
+    def get_object(self, **kwargs):
+        id = self.kwargs.get('pk')
+        return Post.objects.get(pk=id)
+ 
+ 
+# дженерик для удаления объекта
+class PostDelete(DeleteView):
+    template_name = 'post_delete.html'
+    queryset = Post.objects.all()
+    success_url = '../'
