@@ -1,5 +1,6 @@
 from django.urls import path
 from .views import * # импортируем наше представление
+from .views import upgrade_me
  
  
 urlpatterns = [
@@ -10,4 +11,6 @@ urlpatterns = [
     path('<int:pk>/edit', PostUpdate.as_view()),
     path('<int:pk>/delete', PostDelete.as_view()),
     path('search', PostSearch.as_view()),
+    path('profile', ProfileView.as_view()),
+    path('upgrade/', upgrade_me, name = 'upgrade')
 ]

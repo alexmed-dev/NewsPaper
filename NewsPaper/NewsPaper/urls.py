@@ -17,7 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+# from django.contrib.auth.views import LoginView, LogoutView авторизация с дженериками
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('news/', include('news.urls')), # делаем так, чтобы все адреса из нашего приложения (news/urls.py) сами автоматически подключались когда мы их добавим.
+    
+    path('news/', include('news.urls')), 
+    
+    path('accounts/', include('allauth.urls')),
 ]
