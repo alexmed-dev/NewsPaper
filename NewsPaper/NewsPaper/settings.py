@@ -13,6 +13,12 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from pathlib import Path
 
+# from dotenv import load_dotenv
+# load_dotenv()  # take environment variables from .env.
+# from dotenv import dotenv_values
+# config = dotenv_values(".env")
+from decouple import config
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -27,6 +33,7 @@ SECRET_KEY = 'django-insecure-^ie1-h=$&v%%-4@$q&0mhm$_hl=gcwnk%u4jd8(khkbyf6)n+e
 DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1']
+# ALLOWED_HOSTS = ['localhost']
 
 
 # авторизация с allauth
@@ -42,7 +49,7 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_VERIFICATION = 'none'
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 
 
 # Application definition
@@ -54,6 +61,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_apscheduler',
 
     'django_filters' ,
     'django.contrib.sites',
@@ -64,7 +72,7 @@ INSTALLED_APPS = [
     # ... include the providers you want to enable:
     'allauth.socialaccount.providers.google',
 
-    'news',
+    'news.apps.NewsConfig',
 ]
 
 SITE_ID = 1
@@ -168,3 +176,26 @@ LOGIN_REDIRECT_URL = '/news/'
 LOGOUT_REDIRECT_URL = '/news/'
 
 LOGIN_URL = '/accounts/login/' # авторизация с allauth
+
+EMAIL_HOST = config("EMAIL_HOST")
+EMAIL_PORT = config("EMAIL_PORT")
+EMAIL_HOST_USER =config("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
+EMAIL_USE_SSL = config("EMAIL_USE_SSL")
+
+DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL")
+EMAIL_CHARSET = config("EMAIL_CHARSET")
+
+# ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL=LOGIN_URL # кажется не нужно
+ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL=None
+ACCOUNT_EMAIL_SUBJECT_PREFIX='NewsPaper '
+ACCOUNT_SIGNUP_REDIRECT_URL=LOGIN_REDIRECT_URL
+
+# if DEBUG:
+#     EMAIL_BACKEND='django.core.mail.backends.console.EmailBackend'
+
+# формат даты, которую будет воспринимать наш задачник(вспоминаем урок по фильтрам) 
+APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
+ 
+# если задача не выполняется за 25 секунд, то она автоматически снимается, можете поставить время побольше, но как правило, это сильно бьёт по производительности сервера
+APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds

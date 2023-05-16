@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Подписка добавлена</title>
+</head>
+<body>
+    <h2>Здравствуй, {{ user.username }}!</h2>
+    <p> Вы подписаны на категорию: {{ categories.name }} </p>
+    Перейти к <a href="http://127.0.0.1:8000/news/category/{{ categories.id }}">{{ categories.name }}</a>
+</body>
+</html>

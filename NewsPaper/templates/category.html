@@ -1,0 +1,82 @@
+{% extends 'default.html' %}
+
+{% load news_filters %}
+
+{% block title %}
+Категория
+{% endblock title %}
+ 
+<!-- В контенте на странице мы выводим все записи -->
+{% block content %}
+
+{% if category %}
+
+<h1>{{ category.name }}</h1>
+<hr>
+
+<div>
+  <em>
+    Категория
+    <strong>{{ category.name }}</strong>
+  </em>
+  
+  {% if user.is_authenticated %}
+
+    {% if not_subscribed %}
+
+    <a href="/news/subscribe/{{ category.id }}">
+      Подписаться
+    </a>
+
+    {% else %}
+    
+    <a href="/news/unsubscribe/{{ category.id }}">
+      Отписаться
+    </a>
+
+    {% endif %}
+
+  {% endif %}
+
+</div>
+
+ 
+<br>
+<h3>статьи и новости в категории:</h3>
+<br>
+
+<table>
+  <tr>
+      <td>
+          Заголовок
+      </td>
+      <td>
+          Дата
+      </td>
+      <td>
+          Содержание
+      </td>
+  </tr>
+{% for post in posts %} <!-- поменяем posts на filter.qs, т.к. теперь мы забираем уже отобранную по каким-то параметрам информацию -->
+  <tr>
+      <td>
+          {{ post.title|censor }}
+      </td>
+      <td>
+          {{ post.dateTimeCreate|date:'d M Y h:m' }}
+      </td>
+      <td>
+          <a href="/news/{{ post.id }}">{{ post.text|censor|truncatechars:50 }}</a>
+      </td>
+  </tr>
+{% endfor %}
+</table>
+{% else %}
+
+<h1>Нет статей в выбранной категории</h1>
+<hr>
+Попробуйте выбрать другую категорию
+
+{% endif %}
+
+{% endblock content %}

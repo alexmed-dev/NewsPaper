@@ -6,9 +6,13 @@
 Статья или новость
 {% endblock title %}
  
-<!-- В контенте на странице мы выводим все записи -->
 {% block content %}
 <h1>{{ post.title|censor }}</h1>
+категории: 
+{% for cat in post.postCategory.all %}
+  <a href="/news/category/{{ cat.id }}">{{ cat.name }}</a>
+{% endfor %}
+<br>
 {{ post.dateTimeCreate|date:'d M Y h:m' }} {{ post.get_postType_display }} {{ post.author }}
 <hr>
 {{ post.text|censor }}

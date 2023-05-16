@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Подписка добавлена</title>
+</head>
+<body>
+    {% load news_filters %}
+    <h2>Здравствуй, {{ user.username }}!</h2>
+    {% if posts %}    
+        <h3>Новые статьи в ваших любимых категориях за прошедшую неделю:</h3>
+        {% for post in posts %}
+            <a href="http://127.0.0.1:8000/news/{{ post.id }}">
+                {{post.title}}
+            </a>
+            {{ post.text|censor|truncatechars:50 }}
+            <br>
+        {% endfor %}
+    {% else %}
+    <h3>Нет новых статей в ваших любимых категориях за прошедшую неделю</h3>
+    {% endif %}
+</body>
+</html>

@@ -12,5 +12,8 @@ urlpatterns = [
     path('<int:pk>/delete', PostDelete.as_view()),
     path('search', PostSearch.as_view()),
     path('profile', ProfileView.as_view()),
-    path('upgrade/', upgrade_me, name = 'upgrade')
+    path('upgrade/', upgrade_me, name = 'upgrade'),
+    path('category/<int:pk>/', PostCategory.as_view(), name = 'category'),
+    path('subscribe/<int:pk>/', subscribe_to_category, name = 'subscribe'),
+    path('unsubscribe/<int:pk>/', unsubscribe_from_category, name = 'unsubscribe'),
 ]

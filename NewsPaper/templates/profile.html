@@ -14,5 +14,17 @@
 <button> <a href="{% url 'upgrade' %}">Хочу стать автором!</a> </button>
 {% endif %}
 
+{% if categories %}
+    <hr>
+    <h5>Вы подписаны на категории:</h5>
+    {% for category in categories %}
+        {{category.name}}
+        <a href="/news/unsubscribe/{{ category.id }}">
+            Отписаться
+        </a>
+        <br>
+    {% endfor %}
+{% endif %}
+
 
 {% endblock content %}
