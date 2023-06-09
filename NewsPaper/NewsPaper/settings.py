@@ -229,12 +229,12 @@ LOGGING = {
             'style': '{',
         },
         'with_path': {
-            # 'format': '%(asctime)s %(levelname)s %(pathname)s %(message)s'
-            'format': '%(pathname)s'
+            # 'format': '%(asctime)s %(levelname)s %(message)s %(pathname)s'
+            'format': '%(pathname)s' # можно сделать так, чтобы не дублировать информацию
         },
         'with_path_stack': {
-            # 'format': '%(asctime)s %(levelname)s %(pathname)s %(exc_info)s %(message)s'
-            'format': '%(exc_info)s'
+            # 'format': '%(asctime)s %(levelname)s %(message)s %(pathname)s %(exc_info)s'
+            'format': '%(exc_info)s' # можно сделать так, чтобы не дублировать информацию
         },
         'file_general': {
             'format': '%(asctime)s %(levelname)s %(module)s %(message)s'
@@ -306,7 +306,7 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['console_DEBUG', 'console_WARNING', 'console_ERROR', 'file_INFO'],
-            'propagate': True,
+            'propagate': False,
         },
         'django.request': {
             'handlers': ['file_ERROR', 'mail_admins'],
