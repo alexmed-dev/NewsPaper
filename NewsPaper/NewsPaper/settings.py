@@ -199,3 +199,134 @@ APSCHEDULER_DATETIME_FORMAT = "N j, Y, f:s a"
  
 # если задача не выполняется за 25 секунд, то она автоматически снимается, можете поставить время побольше, но как правило, это сильно бьёт по производительности сервера
 APSCHEDULER_RUN_NOW_TIMEOUT = 25  # Seconds
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.path.join(BASE_DIR, 'cache_files'), # Указываем, куда будем сохранять кэшируемые файлы! Не забываем создать папку cache_files внутри папки с manage.py!
+    }
+}
+
+
+# для отправки почты в файл
+EMAIL_FILE_PATH = 'email-messages'
+ADMINS = (
+    ('admin', 'admin@example.com'),
+)
+
+# DEBUG = False
+# if DEBUG:
+#     # EMAIL_BACKEND='django.core.mail.backends.console.EmailBackend'
+#     EMAIL_BACKEND='django.core.mail.backends.filebased.EmailBackend'
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'simple': {
+            'format': '{asctime} {levelname} {message}',
+            'style': '{',
+        },
+        'with_path': {
+            # 'format': '%(asctime)s %(levelname)s %(pathname)s %(message)s'
+            'format': '%(pathname)s'
+        },
+        'with_path_stack': {
+            # 'format': '%(asctime)s %(levelname)s %(pathname)s %(exc_info)s %(message)s'
+            'format': '%(exc_info)s'
+        },
+        'file_general': {
+            'format': '%(asctime)s %(levelname)s %(module)s %(message)s'
+        },
+        'file_errors': {
+            'format': '%(asctime)s %(levelname)s %(message)s %(pathname)s %(exc_info)s'
+        },
+        'to_mail': {
+            'format': '%(asctime)s %(levelname)s %(message)s %(pathname)s'
+        }
+    },
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+    },
+    'handlers': {
+        'console_DEBUG': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'console_WARNING': {
+            'level': 'WARNING',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'with_path'
+        },
+        'console_ERROR': {
+            'level': 'ERROR',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'with_path_stack'
+        },
+        'file_INFO': {
+            'level': 'INFO',
+            'filters': ['require_debug_false'],
+            'class': 'logging.FileHandler',
+            'filename' : os.path.join(BASE_DIR, 'logs','general.log'),
+            'formatter': 'file_general'
+        },
+        'file_ERROR': {
+            'level': 'ERROR',
+            'filters': ['require_debug_true'],
+            'class': 'logging.FileHandler',
+            'filename' : os.path.join(BASE_DIR, 'logs','errors.log'),
+            'formatter': 'file_errors'
+        },
+        'file_security': {
+            'level': 'ERROR',
+            'filters': ['require_debug_true'],
+            'class': 'logging.FileHandler',
+            'filename' : os.path.join(BASE_DIR, 'logs','security.log'),
+            'formatter': 'file_general' # формат как в file_INFO
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler',
+            'formatter': 'to_mail',
+            'include_html': True,
+            'email_backend': 'django.core.mail.backends.filebased.EmailBackend', # отправлять в файл
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console_DEBUG', 'console_WARNING', 'console_ERROR', 'file_INFO'],
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['file_ERROR', 'mail_admins'],
+            'propagate': True,
+        },
+        'django.server': {
+            'handlers': ['file_ERROR', 'mail_admins'],
+            'propagate': True,
+        },
+        'django.template': {
+            'handlers': ['file_ERROR'],
+            'propagate': True,
+        },
+        'django.db_backends': {
+            'handlers': ['file_ERROR'],
+            'propagate': True,
+        },
+        'django.security': {
+            'handlers': ['file_security'],
+            'propagate': True,
+        },
+    }
+}
